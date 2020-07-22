@@ -31,7 +31,10 @@ def main(args: [str]):
         exit(1)
     issue_id, hours = args[1:]
     browser = webdriver.Firefox()
-    log_time(browser, issue_id, hours)
+    try:
+        log_time(browser, issue_id, hours)
+    finally:
+        browser.close()
 
 
 if __name__ == "__main__":
