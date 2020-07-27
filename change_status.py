@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import List
 from selenium import webdriver
@@ -31,7 +32,9 @@ class StatusModifier:
         issue_status.select_by_visible_text(status)
 
     def save(self):
-        self.browser.find_element_by_name("commit").click()
+        save_btn = self.browser.find_element_by_xpath(
+            "//form[@id='issue-form']/input[@type='submit']")
+        save_btn.click()
 
     def change_to_status(self, status: str):
         login(self.browser, self.url)
@@ -39,7 +42,7 @@ class StatusModifier:
         self.goto_edit_issue()
         self.assign_to_self()
         self.set_status(status)
-        # self.save()
+        self.save()
 
 
 def main(args: List[str]) -> None:
@@ -47,7 +50,9 @@ def main(args: List[str]) -> None:
         print("Expected issue ID and status")
         exit(1)
     issue_id, status = args[1:]
-    with webdriver.Firefox() as browser:
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    with webdriver.Firefox(service_log_path=os.devnull, options=options) as browser:
         status_modifier = StatusModifier(browser, issue_id)
         status_modifier.change_to_status(status)
 
